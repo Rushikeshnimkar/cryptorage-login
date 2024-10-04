@@ -10,6 +10,11 @@ const WalletConnectInner: React.FC = () => {
   const [connectionStatus, setConnectionStatus] = useState<string>('Not connected');
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isExtensionEnvironment, setIsExtensionEnvironment] = useState(false);
+
+useEffect(() => {
+  setIsExtensionEnvironment(typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.sendMessage);
+}, []);
 
   const toggleVideo = () => {
     if (videoRef.current) {
@@ -37,35 +42,43 @@ const WalletConnectInner: React.FC = () => {
       setError('Please connect your wallet first');
       return;
     }
-
+  
     if (!extensionId) {
       setError('Extension ID not found');
       return;
     }
-
+  
     try {
       const message = `Connect to Cryptorage extension: ${extensionId}`;
       const signedMessage = await signMessage({
         message: new TextEncoder().encode(message),
       });
-
-      chrome.runtime.sendMessage(extensionId, 
-        { 
-          type: 'WALLET_CONNECTED', 
-          address: currentAccount.address,
-          signedMessage: signedMessage.signature 
-        },
-        (response) => {
-          if (chrome.runtime.lastError) {
-            setError(`Error connecting to extension: ${chrome.runtime.lastError.message}`);
-          } else if (response && response.success) {
-            setConnectionStatus('Connected to extension');
-            setError(null);
-          } else {
-            setError(`Unexpected response from extension: ${JSON.stringify(response)}`);
+  
+      // Check if we're in a Chrome extension environment
+      if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage(extensionId, 
+          { 
+            type: 'WALLET_CONNECTED', 
+            address: currentAccount.address,
+            signedMessage: signedMessage.signature 
+          },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              setError(`Error connecting to extension: ${chrome.runtime.lastError.message}`);
+            } else if (response && response.success) {
+              setConnectionStatus('Connected to extension');
+              setError(null);
+            } else {
+              setError(`Unexpected response from extension: ${JSON.stringify(response)}`);
+            }
           }
-        }
-      );
+        );
+      } else {
+        // We're not in a Chrome extension environment
+        console.log('Signed message:', signedMessage.signature);
+        setConnectionStatus('Wallet connected (Extension not detected)');
+        setError(null);
+      }
     } catch (err) {
       setError(`Error signing message: ${err}`);
     }
@@ -208,9 +221,18 @@ const WalletConnectInner: React.FC = () => {
   </a>
 </motion.div>
       </div>
+      {isExtensionEnvironment ? (
+  <button onClick={handleConnect} className="...">
+    Connect to Extension
+  </button>
+) : (
+  <p>Extension not detected. Please install the Cryptorage extension.</p>
+)}
     </div>
   );
 };
+
+
 
 
 
