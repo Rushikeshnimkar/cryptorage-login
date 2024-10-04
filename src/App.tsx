@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { WalletKitProvider, ConnectButton, useWalletKit } from '@mysten/wallet-kit';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiLock, FiCloud, FiCamera, FiCheck, FiX, FiShield, FiArrowRight, FiPlay, FiPause } from 'react-icons/fi';
+import { motion, AnimatePresence, useViewportScroll, useTransform } from 'framer-motion'
+import { FiLock, FiCloud, FiCamera, FiCheck, FiX, FiShield, FiArrowRight, FiPlay, FiPause, FiShare2, FiType } from 'react-icons/fi';
+
+
 
 const WalletConnectInner: React.FC = () => {
   const { isConnected, currentAccount, signMessage } = useWalletKit();
@@ -11,6 +13,9 @@ const WalletConnectInner: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isExtensionEnvironment, setIsExtensionEnvironment] = useState(false);
+  const { scrollYProgress } = useViewportScroll();
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
 useEffect(() => {
   setIsExtensionEnvironment(typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.sendMessage);
@@ -26,7 +31,7 @@ useEffect(() => {
       setIsPlaying(!isPlaying);
     }
   };
-
+ 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const extId = urlParams.get('extensionId');
@@ -94,8 +99,62 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-[#1a1b26] text-white overflow-hidden">
+      {/* Dynamic grid effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="relative w-full h-full">
+          {[...Array(10)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute inset-0 grid grid-cols-10 gap-4 opacity-20"
+              initial={{ rotate: 0, scale: 1 }}
+              animate={{
+                rotate: [0, 90, 180, 270, 360],
+                scale: [1, 1.1, 1, 0.9, 1],
+              }}
+              transition={{
+                duration: 20 + i * 2,
+                ease: "linear",
+                repeat: Infinity,
+              }}
+            >
+              {[...Array(100)].map((_, j) => (
+                <motion.div
+                  key={j}
+                  className="bg-[#00e5ff] rounded-full"
+                  initial={{ opacity: 0.1 }}
+                  animate={{ opacity: [0.1, 0.3, 0.1] }}
+                  transition={{
+                    duration: 3 + (j % 5),
+                    ease: "easeInOut",
+                    repeat: Infinity,
+                    delay: j * 0.05,
+                  }}
+                />
+              ))}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* Enhanced dynamic background */}
+      <motion.div
+        className="absolute inset-0 opacity-30"
+        animate={{
+          backgroundPosition: ['0% 0%', '100% 100%'],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 20,
+          ease: 'linear',
+          repeat: Infinity,
+          repeatType: 'reverse',
+        }}
+        style={{
+          backgroundImage: 'url("data:image/svg+xml,%3Csvg ... %3C/svg%3E")',
+        }}
+      />
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="grid grid-cols-1 lg:grid-cols-5   space-x-72 items-center">
+      <motion.div className="grid grid-cols-1 lg:grid-cols-5   space-x-72 items-center">
         <div className="lg:col-span-2">
             <motion.h1 
               initial={{ opacity: 0, y: -20 }}
@@ -166,7 +225,7 @@ useEffect(() => {
               playsInline
               autoPlay
             >
-              <source src="/cryptorage.mp4" type="video/mp4" />
+              <source src="https://gateway.pinata.cloud/ipfs/QmPfCXii7NjwzChkLZeD6g4BJkFb2cyF1xAvQrQ8m1ZVS5" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <button
@@ -181,7 +240,7 @@ useEffect(() => {
             </button>
           </div>
         </motion.div>
-        </div>
+        </motion.div>
 
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -191,43 +250,69 @@ useEffect(() => {
         >
           <h2 className="text-3xl font-bold mb-8 text-center">Key Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FeatureCard icon={FiCamera} title="One-Click Capture" description="Easily capture and store screenshots directly from your browser." />
-            <FeatureCard icon={FiLock} title="End-to-End Encryption" description="Your screenshots are encrypted and stored securely on the blockchain." />
-            <FeatureCard icon={FiCloud} title="Decentralized Storage" description="Access your screenshots from anywhere, anytime, with blockchain reliability." />
+          <FeatureCard icon={FiCamera} title="One-Click Capture" description="Easily capture and store screenshots directly from your browser." />
+            <FeatureCard 
+              icon={FiCamera} 
+              title="Full-Page Capture" 
+              description="Capture entire web pages with a single click, not just what's visible on your screen." 
+            />
+            
+            <FeatureCard 
+              icon={FiLock} 
+              title="End-to-End Encryption" 
+              description="Your screenshots are encrypted and stored securely on the blockchain." 
+            />
+            <FeatureCard 
+              icon={FiCloud} 
+              title="Decentralized Storage" 
+              description="Access your screenshots from anywhere, anytime, with blockchain reliability." 
+            />
+            <FeatureCard 
+              icon={FiShare2} 
+              title="Team Sharing" 
+              description="Share your screenshots securely within your team for enhanced collaboration." 
+            />
+            <FeatureCard 
+              icon={FiType} 
+              title="Text Extraction" 
+              description="Automatically extract and search text from your screenshots using advanced OCR technology." 
+            />
           </div>
         </motion.div>
-
+        <AnimatePresence>
         <motion.div 
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.5, delay: 0.6 }}
-  className="mt-24 bg-[#2a2b36] rounded-lg p-8"
->
-  <h2 className="text-3xl font-bold mb-6">How It Works</h2>
-  <ol className="list-decimal list-inside space-y-4 text-gray-300">
-    <li>Install the Cryptorage browser extension</li>
-    <li>Connect your Sui wallet</li>
-    <li>Capture screenshots with a single click</li>
-    <li>Your screenshots are automatically encrypted and stored on the blockchain</li>
-    <li>Access your screenshots from any device, anytime</li>
-  </ol>
-  <a 
-    href="https://github.com/Rushikeshnimkar/CryptoRage.git"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="mt-8 bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-6 w-[180px] rounded-lg transition duration-300 text-lg shadow-lg flex items-center inline-block"
-  >
-    Get Started <FiArrowRight className="ml-2" />
-  </a>
-</motion.div>
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="mt-24 bg-[#2a2b36] rounded-lg p-8"
+        >
+          <h2 className="text-3xl font-bold mb-6">How It Works</h2>
+          <ol className="list-decimal list-inside space-y-4 text-gray-300">
+            <li>Install the Cryptorage browser extension</li>
+            <li>Connect your Sui wallet</li>
+            <li>Choose between full-page or normal screenshot capture</li>
+            <li>Your screenshots are automatically encrypted and stored on the blockchain</li>
+            <li>Share screenshots with your team or extract text as needed</li>
+            <li>Access your screenshots from any device, anytime</li>
+          </ol>
+          <a 
+            href="https://github.com/Rushikeshnimkar/CryptoRage.git"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-6 w-[180px] rounded-lg transition duration-300 text-lg shadow-lg flex items-center inline-block"
+          >
+            Get Started <FiArrowRight className="ml-2" />
+          </a>
+        </motion.div>
+        </AnimatePresence>
       </div>
       {isExtensionEnvironment ? (
-  <button onClick={handleConnect} className="...">
-    Connect to Extension
-  </button>
-) : (
-  <p>Extension not detected. Please install the Cryptorage extension.</p>
-)}
+        <button onClick={handleConnect} className="...">
+          Connect to Extension
+        </button>
+      ) : (
+        <p>Extension not detected. Please install the Cryptorage extension.</p>
+      )}
     </div>
   );
 };
