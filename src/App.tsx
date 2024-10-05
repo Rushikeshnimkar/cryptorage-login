@@ -215,7 +215,7 @@ useEffect(() => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="relative w-full max-w-md mx-auto lg:max-w-full lg:col-span-3"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#00e5ff]/20 to-purple-500/20 rounded-lg filter blur-3xl"></div>
+          <div className="absolute inset-0  rounded-lg filter blur-3xl"></div>
           <div className="relative z-10 rounded-lg shadow-2xl overflow-hidden aspect-[1000/1500] max-h-[80vh]">
             <video
               ref={videoRef}
