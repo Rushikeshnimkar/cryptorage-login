@@ -99,35 +99,35 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen bg-[#1a1b26] text-white overflow-hidden">
-      {/* Dynamic grid effect */}
+             {/* Simplified background effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="relative w-full h-full">
-          {[...Array(10)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute inset-0 grid grid-cols-10 gap-4 opacity-20"
+              className="absolute inset-0 grid grid-cols-5 gap-4 opacity-20"
               initial={{ rotate: 0, scale: 1 }}
               animate={{
-                rotate: [0, 90, 180, 270, 360],
-                scale: [1, 1.1, 1, 0.9, 1],
+                rotate: [0, 360],
+                scale: [1, 1.05, 1],
               }}
               transition={{
-                duration: 20 + i * 2,
+                duration: 30 + i * 5,
                 ease: "linear",
                 repeat: Infinity,
               }}
             >
-              {[...Array(100)].map((_, j) => (
+              {[...Array(30)].map((_, j) => (
                 <motion.div
                   key={j}
                   className="bg-[#00e5ff] rounded-full"
                   initial={{ opacity: 0.1 }}
-                  animate={{ opacity: [0.1, 0.3, 0.1] }}
+                  animate={{ opacity: [0.1, 0.2, 0.1] }}
                   transition={{
-                    duration: 3 + (j % 5),
+                    duration: 5 + (j % 3),
                     ease: "easeInOut",
                     repeat: Infinity,
-                    delay: j * 0.05,
+                    delay: j * 0.1,
                   }}
                 />
               ))}
@@ -135,24 +135,7 @@ useEffect(() => {
           ))}
         </div>
       </div>
-
-      {/* Enhanced dynamic background */}
-      <motion.div
-        className="absolute inset-0 opacity-30"
-        animate={{
-          backgroundPosition: ['0% 0%', '100% 100%'],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 20,
-          ease: 'linear',
-          repeat: Infinity,
-          repeatType: 'reverse',
-        }}
-        style={{
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg ... %3C/svg%3E")',
-        }}
-      />
+     
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <motion.div className="grid grid-cols-1 lg:grid-cols-5   space-x-72 items-center">
         <div className="lg:col-span-2">
@@ -229,14 +212,10 @@ useEffect(() => {
               Your browser does not support the video tag.
             </video>
             <button
-              onClick={toggleVideo}
-              className="absolute inset-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 opacity-0 hover:opacity-100"
+              
+              className="absolute inset-0 w-full h-full flex items-center justify-center  bg-opacity-50 transition-opacity duration-300 opacity-0 "
             >
-              {isPlaying ? (
-                <FiPause className="text-white text-6xl" />
-              ) : (
-                <FiPlay className="text-white text-6xl" />
-              )}
+             
             </button>
           </div>
         </motion.div>
@@ -248,7 +227,7 @@ useEffect(() => {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="mt-24"
         >
-          <h2 className="text-3xl font-bold mb-8 text-center">Key Features</h2>
+          <h2 className="text-3xl font-bold mb-8  text-center">Key Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FeatureCard icon={FiCamera} title="One-Click Capture" description="Easily capture and store screenshots directly from your browser." />
             <FeatureCard 
