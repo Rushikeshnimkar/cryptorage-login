@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { WalletKitProvider, ConnectButton, useWalletKit } from '@mysten/wallet-kit';
 import { motion, AnimatePresence, useViewportScroll, useTransform } from 'framer-motion'
-import { FiLock, FiCloud, FiCamera, FiCheck, FiX, FiShield, FiArrowRight, FiPlay, FiPause, FiShare2, FiType } from 'react-icons/fi';
+import { FiLock, FiCloud, FiCamera, FiCheck, FiX, FiArrowRight, FiShare2, FiType, FiGithub } from 'react-icons/fi';
 
 
 
@@ -139,14 +139,27 @@ useEffect(() => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <motion.div className="grid grid-cols-1 lg:grid-cols-5   space-x-72 items-center">
         <div className="lg:col-span-2">
-            <motion.h1 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-5xl font-bold mb-6"
-            >
-              Cryptorage
-            </motion.h1>
+        <div className="flex items-center justify-between mb-6">
+              <motion.h1 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-5xl font-bold"
+              >
+                Cryptorage
+              </motion.h1>
+              <motion.a
+                href="https://github.com/Rushikeshnimkar/CryptoRage.git"
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-[#00e5ff] hover:text-[#00b8cc] transition-colors duration-300"
+              >
+                <FiGithub className="text-3xl" />
+              </motion.a>
+            </div>
             <motion.p 
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
