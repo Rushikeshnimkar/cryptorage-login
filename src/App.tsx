@@ -105,12 +105,18 @@ const WalletConnectInner: React.FC = () => {
     title: string;
     description: string;
   }) => (
-    <div className="bg-[#2a2b36] p-6 rounded-lg shadow-lg">
+    <motion.div
+      className="bg-[#2a2b36] p-6 rounded-lg shadow-lg cursor-pointer hover:border-2 border-[#00e5ff]  z-50"
+      whileHover={{ scale: 1.05, boxShadow: '0px 10px 20px rgba(0,0,0,0.2)' }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
       <Icon className="text-4xl mb-4 text-[#00e5ff]" />
       <h3 className="text-xl font-semibold mb-2">{title}</h3>
       <p className="text-gray-300">{description}</p>
-    </div>
+    </motion.div>
   );
+
+  
 
   return (
     <div className="min-h-screen bg-[#1a1b26] text-white overflow-hidden">
@@ -265,59 +271,76 @@ const WalletConnectInner: React.FC = () => {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-24"
-        >
-          <h2 className="text-3xl font-bold mb-8 text-center">Key Features</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <FeatureCard icon={FiCamera} title="One-Click Capture" description="Easily capture and store screenshots directly from your browser." />
-            <FeatureCard icon={FiCamera} title="Full-Page Capture" description="Capture entire web pages with a single click, not just what's visible on your screen." />
-            <FeatureCard icon={FiLock} title="End-to-End Encryption" description="Your screenshots are encrypted and stored securely on the blockchain." />
-            <FeatureCard icon={FiCloud} title="Decentralized Storage" description="Access your screenshots from anywhere, anytime, with blockchain reliability." />
-            <FeatureCard icon={FiShare2} title="Team Sharing" description="Share your screenshots securely within your team for enhanced collaboration." />
-            <FeatureCard icon={FiType} title="Text Extraction" description="Automatically extract and search text from your screenshots using advanced OCR technology." />
-          </div>
-        </motion.div>
+  initial="hidden"
+  animate="visible"
+  variants={{
+    hidden: {
+      opacity: 0,
+      y: 20,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        staggerChildren: 0.15,
+      },
+    },
+  }}
+  className="mt-24"
+>
+  <h2 className="text-3xl font-bold mb-8 text-center">Key Features</h2>
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <FeatureCard icon={FiCamera} title="One-Click Capture" description="Easily capture and store screenshots directly from your browser." />
+    <FeatureCard icon={FiCamera} title="Full-Page Capture" description="Capture entire web pages with a single click, not just what's visible on your screen." />
+    <FeatureCard icon={FiLock} title="End-to-End Encryption" description="Your screenshots are encrypted and stored securely on the blockchain." />
+    <FeatureCard icon={FiCloud} title="Decentralized Storage" description="Access your screenshots from anywhere, anytime, with blockchain reliability." />
+    <FeatureCard icon={FiShare2} title="Team Sharing" description="Share your screenshots securely within your team for enhanced collaboration." />
+    <FeatureCard icon={FiType} title="Text Extraction" description="Automatically extract and search text from your screenshots using advanced OCR technology." />
+  </div>
+</motion.div>
         <AnimatePresence>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="mt-24 bg-[#2a2b36] rounded-lg p-8"
-          >
-            <h2 className="text-3xl font-bold mb-6">How It Works</h2>
-            <ol className="list-decimal list-inside space-y-4 text-gray-300">
-              <li>Install the Cryptorage browser extension</li>
-              <li>Connect your Sui wallet</li>
-              <li>Choose between full-page or normal screenshot capture</li>
-              <li>Your screenshots are automatically encrypted and stored on the blockchain</li>
-              <li>Share screenshots with your team or extract text as needed</li>
-              <li>Access your screenshots from any device, anytime</li>
-            </ol>
-            <a
-              href="https://github.com/Rushikeshnimkar/CryptoRage.git"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-6 w-[180px] rounded-lg transition duration-300 text-lg shadow-lg flex items-center inline-block"
-            >
-              Get Started <FiArrowRight className="ml-2" />
-            </a>
-          </motion.div>
+        <motion.div
+  className="mt-24 bg-[#2a2b36] rounded-lg p-8 shadow-md"
+>
+  <h2 className="text-4xl font-bold mb-6 text-[#00e5ff]">How It Works</h2>
+  <ol className="list-decimal list-inside space-y-4 text-gray-300">
+    <li className="flex items-start">
+      <span className="mr-3 text-[#00e5ff] font-bold text-lg">1.</span>
+      Install the Cryptorage browser extension.
+    </li>
+    <li className="flex items-start">
+      <span className="mr-3 text-[#00e5ff] font-bold text-lg">2.</span>
+      Connect your Sui wallet.
+    </li>
+    <li className="flex items-start">
+      <span className="mr-3 text-[#00e5ff] font-bold text-lg">3.</span>
+      Choose between full-page or normal screenshot capture.
+    </li>
+    <li className="flex items-start">
+      <span className="mr-3 text-[#00e5ff] font-bold text-lg">4.</span>
+      Your screenshots are automatically encrypted and stored on the blockchain.
+    </li>
+    <li className="flex items-start">
+      <span className="mr-3 text-[#00e5ff] font-bold text-lg">5.</span>
+      Share screenshots with your team or extract text as needed.
+    </li>
+    <li className="flex items-start">
+      <span className="mr-3 text-[#00e5ff] font-bold text-lg">6.</span>
+      Access your screenshots from any device, anytime.
+    </li>
+  </ol>
+  <a
+    href="https://github.com/Rushikeshnimkar/CryptoRage.git"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="mt-8 bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-6 w-[180px] rounded-lg transition-colors duration-300 text-lg shadow-lg flex items-center justify-center"
+  >
+    Get Started <FiArrowRight className="ml-2" />
+  </a>
+</motion.div>
         </AnimatePresence>
       </div>
-      {isExtensionEnvironment ? (
-        connectionStatus !== 'Connected to extension' && (
-          <button onClick={handleConnect} className="fixed bottom-5 right-5 bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-6 rounded-lg shadow-lg transition duration-300">
-            Connect to Extension
-          </button>
-        )
-      ) : (
-        <p className="fixed bottom-5 right-5 bg-red-500 text-white font-bold py-3 px-6 rounded-lg shadow-lg">
-          Extension not detected. Please install the Cryptorage extension.
-        </p>
-      )}
+    
     </div>
   );
 };
