@@ -3,6 +3,7 @@ import Confetti from 'react-confetti';
 import { WalletKitProvider, ConnectButton, useWalletKit } from '@mysten/wallet-kit';
 import { motion, AnimatePresence, useViewportScroll, useTransform } from 'framer-motion';
 import { FiLock, FiCloud, FiCamera, FiCheck, FiX, FiArrowRight, FiShare2, FiType, FiGithub } from 'react-icons/fi';
+import { Helmet } from 'react-helmet';
 
 const WalletConnectInner: React.FC = () => {
   const { isConnected, currentAccount, signMessage } = useWalletKit();
@@ -120,6 +121,38 @@ const WalletConnectInner: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#1a1b26] text-white overflow-hidden">
+      <Helmet>
+        <title>Cryptorage - Secure, Decentralized Screenshot Storage</title>
+        <meta name="description" content="Capture, encrypt, and store screenshots directly on the blockchain with Cryptorage. Enjoy unparalleled security and accessibility for your visual data." />
+        <meta name="keywords" content="Cryptorage, blockchain, screenshot storage, decentralized, encryption, Sui wallet" />
+        
+        {/* OpenGraph metadata */}
+        <meta property="og:title" content="Cryptorage - Secure, Decentralized Screenshot Storage" />
+        <meta property="og:description" content="Capture, encrypt, and store screenshots directly on the blockchain with Cryptorage. Enjoy unparalleled security and accessibility for your visual data." />
+        <meta property="og:image" content="./og-image.png" /> {/* Replace with your actual OG image URL */}
+        <meta property="og:url" content="https://cryptorage-login.vercel.app/" />
+        <meta property="og:type" content="website" />
+        
+        {/* Twitter Card metadata */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Cryptorage - Secure, Decentralized Screenshot Storage" />
+        <meta name="twitter:description" content="Capture, encrypt, and store screenshots directly on the blockchain with Cryptorage. Enjoy unparalleled security and accessibility for your visual data." />
+        <meta name="twitter:image" content="./og-image.png" /> {/* Replace with your actual Twitter card image URL */}
+        
+        <link rel="canonical" href="https://cryptorage-login.vercel.app/" />
+        <script type="application/ld+json">
+    {`
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Cryptorage",
+        "description": "Secure, Decentralized Screenshot Storage",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web"
+      }
+    `}
+  </script>
+      </Helmet>
       {/* Confetti Animation with Fade-Out Effect */}
       <AnimatePresence>
         {showConfetti && (
