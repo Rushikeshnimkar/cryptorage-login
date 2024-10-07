@@ -114,8 +114,20 @@ const WalletConnectInner: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#1a1b26] text-white overflow-hidden">
-      {/* Confetti Animation */}
-      {showConfetti && <Confetti />}
+      {/* Confetti Animation with Fade-Out Effect */}
+      <AnimatePresence>
+        {showConfetti && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1 }}
+            style={{ position: 'absolute', width: '100%', height: '100%' }}
+          >
+            <Confetti />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Simplified background effect */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
