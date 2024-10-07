@@ -140,7 +140,7 @@ const WalletConnectInner: React.FC = () => {
         <meta name="twitter:image" content="./og-image.png" /> {/* Replace with your actual Twitter card image URL */}
         
         <link rel="canonical" href="https://cryptorage-login.vercel.app/" />
-        <script type="application/ld+json">
+         <script type="application/ld+json">
     {`
       {
         "@context": "https://schema.org",
@@ -206,7 +206,7 @@ const WalletConnectInner: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <motion.div className="grid grid-cols-1 lg:grid-cols-5 space-x-72 items-center">
+        <motion.div className="grid grid-cols-1 lg:grid-cols-5 lg:space-x-72 items-center">
           <div className="lg:col-span-2">
             <div className="flex items-center justify-between mb-6">
               <motion.h1
