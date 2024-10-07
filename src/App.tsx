@@ -17,9 +17,9 @@ const WalletConnectInner: React.FC = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
-useEffect(() => {
-  setIsExtensionEnvironment(typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.sendMessage);
-}, []);
+  useEffect(() => {
+    setIsExtensionEnvironment(typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.sendMessage);
+  }, []);
 
   const toggleVideo = () => {
     if (videoRef.current) {
@@ -186,12 +186,18 @@ useEffect(() => {
               <h2 className="text-2xl font-bold mb-4">Connect to Cryptorage</h2>
               <ConnectButton className="w-full bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg mb-4" />
               {isConnected && (
-                <button
-                  onClick={handleConnect}
-                  className="w-full bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg"
-                >
-                  Connect to Extension
-                </button>
+                connectionStatus !== 'Connected to extension' ? (
+                  <button
+                    onClick={handleConnect}
+                    className="w-full bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg"
+                  >
+                    Connect to Extension
+                  </button>
+                ) : (
+                  <div className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg flex items-center justify-center">
+                    <FiCheck className="mr-2" /> Connected
+                  </div>
+                )
               )}
               <div className="mt-4 text-sm space-y-2">
                 <StatusItem label="Wallet status" value={isConnected ? 'Connected' : 'Not connected'} isConnected={isConnected} />
@@ -308,8 +314,6 @@ useEffect(() => {
     </div>
   );
 };
-
-
 
 
 
