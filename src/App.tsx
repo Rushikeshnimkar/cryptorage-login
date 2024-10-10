@@ -4,6 +4,7 @@ import { WalletKitProvider, ConnectButton, useWalletKit } from '@mysten/wallet-k
 import { motion, AnimatePresence, useViewportScroll, useTransform } from 'framer-motion';
 import { FiLock, FiCloud, FiCamera, FiCheck, FiX, FiArrowRight, FiShare2, FiType, FiGithub } from 'react-icons/fi';
 import { Helmet } from 'react-helmet';
+import { supabase } from './supabaseClient';
 
 const WalletConnectInner: React.FC = () => {
   const { isConnected, currentAccount, signMessage } = useWalletKit();
@@ -24,16 +25,6 @@ const WalletConnectInner: React.FC = () => {
     setIsExtensionEnvironment(typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.sendMessage);
   }, []);
 
-  const toggleVideo = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -91,11 +82,28 @@ const WalletConnectInner: React.FC = () => {
         console.log('Signed message:', signedMessage.signature);
         setConnectionStatus('Wallet connected (Extension not detected)');
         setError(null);
+     // **Add Wallet Address to Supabase**
+     try {
+      const { data, error: supabaseError } = await supabase
+        .from('login')
+        .upsert(
+          { address: currentAccount.address },
+          { onConflict: 'address' }
+        );
+
+      if (supabaseError) {
+        console.error('Supabase Upsert Error:', supabaseError.message);
+      } else {
+        console.log('Wallet address stored successfully:', data);
       }
     } catch (err) {
-      setError(`Error signing message: ${err}`);
+      console.error('Supabase Error:', err);
     }
-  };
+  }
+} catch (err) {
+  setError(`Error signing message: ${err}`);
+}
+};
 
   const FeatureCard = ({
     icon: Icon,
