@@ -82,28 +82,29 @@ const WalletConnectInner: React.FC = () => {
         console.log('Signed message:', signedMessage.signature);
         setConnectionStatus('Wallet connected (Extension not detected)');
         setError(null);
-     // **Add Wallet Address to Supabase**
-     try {
-      const { data, error: supabaseError } = await supabase
-        .from('login')
-        .upsert(
-          { address: currentAccount.address },
-          { onConflict: 'address' }
-        );
+      }
 
-      if (supabaseError) {
-        console.error('Supabase Upsert Error:', supabaseError.message);
-      } else {
-        console.log('Wallet address stored successfully:', data);
+      // Add Wallet Address to Supabase
+      try {
+        const { data, error: supabaseError } = await supabase
+          .from('login')
+          .upsert(
+            { address: currentAccount.address },
+            { onConflict: 'address' }
+          );
+
+        if (supabaseError) {
+          console.error('Supabase Upsert Error:', supabaseError.message);
+        } else {
+          console.log('Wallet address stored successfully:', data);
+        }
+      } catch (err) {
+        console.error('Supabase Error:', err);
       }
     } catch (err) {
-      console.error('Supabase Error:', err);
+      setError(`Error signing message: ${err}`);
     }
-  }
-} catch (err) {
-  setError(`Error signing message: ${err}`);
-}
-};
+  };
 
   const FeatureCard = ({
     icon: Icon,
