@@ -22,6 +22,7 @@ import {
   FiType,
   FiGithub,
   FiGlobe,
+  FiCpu, // Add this new icon for AI features
 } from "react-icons/fi";
 import { Helmet } from "react-helmet";
 import { supabase } from "./supabaseClient";
@@ -470,10 +471,15 @@ const WalletConnectInner: React.FC = () => {
               description="Automatically extract and search text from your screenshots using advanced OCR technology."
             />
             <FeatureCard
-  icon={FiGlobe}
-  title="Web Scraping"
-  description="Extract images, videos, audio, and links from any website with a single click."
-/>
+              icon={FiGlobe}
+              title="Web Scraping"
+              description="Extract images, videos, audio, and links from any website with a single click."
+            />
+            <FeatureCard
+              icon={FiCpu}
+              title="AI Website Summary"
+              description="Get instant website summaries powered by on-device Gemini Nano AI, ensuring privacy and speed."
+            />
           </div>
         </motion.div>
         <AnimatePresence>
@@ -518,6 +524,12 @@ const WalletConnectInner: React.FC = () => {
                   6.
                 </span>
                 Access your screenshots from any device, anytime.
+              </li>
+              <li className="flex items-start">
+                <span className="mr-3 text-[#00e5ff] font-bold text-lg">
+                  7.
+                </span>
+                Generate quick, private summaries of any webpage using on-device AI.
               </li>
             </ol>
             <a
