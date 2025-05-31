@@ -110,20 +110,16 @@ const WalletConnectInner: React.FC = () => {
 
       // If in Chrome extension environment, attempt to ping & connect
       if (isExtensionEnvironment && typeof chrome !== "undefined") {
-        chrome.runtime.sendMessage(
-          extensionId,
-          { type: "PING" },
-          (pingResponse: any) => {
-            if (chrome.runtime.lastError) {
-              setError(
-                `Extension not found or not installed. Please ensure the Cryptorage extension is installed and enabled. Error: ${chrome.runtime.lastError.message}`
-              );
-              setIsExtensionConnected(false);
-              return;
-            }
-            sendConnectionMessage(signature);
+        chrome.runtime.sendMessage(extensionId, { type: "PING" }, () => {
+          if (chrome.runtime.lastError) {
+            setError(
+              `Extension not found or not installed. Please ensure the Cryptorage extension is installed and enabled. Error: ${chrome.runtime.lastError.message}`
+            );
+            setIsExtensionConnected(false);
+            return;
           }
-        );
+          sendConnectionMessage(signature);
+        });
       } else {
         // Not in Chrome extension environment
         console.log("Signed message:", signature);
@@ -156,11 +152,11 @@ const WalletConnectInner: React.FC = () => {
       } catch (err) {
         console.error("Supabase Error:", err);
       }
-    } catch (err: any) {
-      if (err.name === "UserRejectedRequestError") {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "UserRejectedRequestError") {
         setError("Message signing was rejected by user");
       } else {
-        setError(`Error signing message: ${err.message || String(err)}`);
+        setError(`Error signing message: ${err instanceof Error ? err.message : String(err)}`);
       }
       setIsExtensionConnected(false);
     }
@@ -177,7 +173,7 @@ const WalletConnectInner: React.FC = () => {
           chainId: chain?.id,
           chainName: chain?.name,
         },
-        (response: { success: any; error: any }) => {
+        (response: { success: unknown; error: unknown }) => {
           if (chrome.runtime.lastError) {
             setError(
               `Error connecting to extension: ${chrome.runtime.lastError.message}`
