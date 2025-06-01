@@ -11,8 +11,6 @@ import {
   FiCamera,
   FiLock,
   FiCloud,
-  FiShare2,
-  FiType,
   FiMessageCircle,
 } from "react-icons/fi";
 import Head from "next/head";
@@ -68,7 +66,7 @@ const WalletConnectInner: React.FC = () => {
     title,
     description,
   }: {
-    icon: React.ComponentType<any>;
+    icon: React.ComponentType<{ className: string }>;
     title: string;
     description: string;
   }) => (
