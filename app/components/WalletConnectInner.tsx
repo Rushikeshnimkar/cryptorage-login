@@ -548,11 +548,11 @@ const WalletConnectInner: React.FC = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-[#3a3b46] bg-gradient-to-br from-[#2a2b36] to-[#1e1f2a]">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#00e5ff]/10 to-[#00b8cc]/10 rounded-2xl"></div>
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl ">
+                <div className="absolute inset-0  rounded-2xl"></div>
                 <video
                   ref={videoRef}
-                  className="relative w-full h-auto max-h-[70vh] object-cover rounded-2xl"
+                  className="relative w-full h-auto max-h-[70vh] object-fil rounded-2xl"
                   loop
                   muted
                   playsInline
