@@ -3,7 +3,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import Confetti from "react-confetti";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiCheck, FiX, FiGithub } from "react-icons/fi";
+import {
+  FiCheck,
+  FiX,
+  FiGithub,
+  FiArrowRight,
+  FiCamera,
+  FiLock,
+  FiCloud,
+  FiShare2,
+  FiType,
+  FiMessageCircle,
+} from "react-icons/fi";
 import Head from "next/head";
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -23,14 +34,14 @@ const StatusItem: React.FC<StatusItemProps> = ({
   value,
   isConnected,
 }) => (
-  <div className="flex justify-between items-center">
-    <span className="text-gray-400">{label}:</span>
-    <span className="font-semibold flex items-center">
+  <div className="flex justify-between items-center py-2 px-3 bg-[#1e1f2a] rounded-md border border-[#3a3b46]">
+    <span className="text-gray-400 text-sm font-medium">{label}:</span>
+    <span className="font-semibold flex items-center text-sm">
       {value}
       {isConnected ? (
-        <FiCheck className="ml-2 text-green-500" />
+        <FiCheck className="ml-2 text-green-400 w-4 h-4" />
       ) : (
-        <FiX className="ml-2 text-red-500" />
+        <FiX className="ml-2 text-red-400 w-4 h-4" />
       )}
     </span>
   </div>
@@ -51,6 +62,34 @@ const WalletConnectInner: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   const ETHEREUM_CHAIN_ID = 1;
+
+  const FeatureCard = ({
+    icon: Icon,
+    title,
+    description,
+  }: {
+    icon: React.ComponentType<any>;
+    title: string;
+    description: string;
+  }) => (
+    <motion.div
+      className="bg-gradient-to-br from-[#2a2b36] to-[#1e1f2a] p-6 rounded-xl shadow-xl border border-[#3a3b46] hover:border-[#00e5ff] transition-all duration-300 group"
+      whileHover={{
+        scale: 1.02,
+        y: -5,
+        boxShadow: "0px 20px 40px rgba(0,229,255,0.1)",
+      }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    >
+      <div className="bg-gradient-to-br from-[#00e5ff] to-[#00b8cc] p-3 rounded-lg w-fit mb-4 group-hover:scale-110 transition-transform duration-300">
+        <Icon className="text-2xl text-[#1a1b26]" />
+      </div>
+      <h3 className="text-xl font-bold mb-3 text-white group-hover:text-[#00e5ff] transition-colors duration-300">
+        {title}
+      </h3>
+      <p className="text-gray-300 leading-relaxed">{description}</p>
+    </motion.div>
+  );
 
   // Detect if running in a Chrome-extension-like environment
   useEffect(() => {
@@ -88,6 +127,42 @@ const WalletConnectInner: React.FC = () => {
       setError(null);
     }
   }, [isConnected, chain]);
+
+  const sendConnectionMessage = (signature: string) => {
+    if (typeof chrome === "undefined") return;
+
+    chrome.runtime.sendMessage(
+      extensionId,
+      {
+        type: "WALLET_CONNECTED",
+        address: address,
+        signedMessage: signature,
+        chainId: chain?.id,
+        chainName: chain?.name,
+      },
+      (response: { success: unknown; error: unknown }) => {
+        if (chrome.runtime.lastError) {
+          setError(
+            `Error connecting to extension: ${chrome.runtime.lastError.message}`
+          );
+          setIsExtensionConnected(false);
+        } else if (response && response.success) {
+          setConnectionStatus("Connected to extension");
+          setIsExtensionConnected(true);
+          setError(null);
+          // Trigger confetti animation
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000);
+        } else {
+          const errorMsg = response
+            ? response.error || "Unknown error"
+            : "No response from extension";
+          setError(`Failed to connect to extension: ${errorMsg}`);
+          setIsExtensionConnected(false);
+        }
+      }
+    );
+  };
 
   const handleConnectToExtension = async () => {
     if (!isConnected || !address) {
@@ -156,45 +231,13 @@ const WalletConnectInner: React.FC = () => {
       if (err instanceof Error && err.name === "UserRejectedRequestError") {
         setError("Message signing was rejected by user");
       } else {
-        setError(`Error signing message: ${err instanceof Error ? err.message : String(err)}`);
+        setError(
+          `Error signing message: ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
       }
       setIsExtensionConnected(false);
-    }
-
-    function sendConnectionMessage(signature: string) {
-      if (typeof chrome === "undefined") return;
-
-      chrome.runtime.sendMessage(
-        extensionId,
-        {
-          type: "WALLET_CONNECTED",
-          address: address,
-          signedMessage: signature,
-          chainId: chain?.id,
-          chainName: chain?.name,
-        },
-        (response: { success: unknown; error: unknown }) => {
-          if (chrome.runtime.lastError) {
-            setError(
-              `Error connecting to extension: ${chrome.runtime.lastError.message}`
-            );
-            setIsExtensionConnected(false);
-          } else if (response && response.success) {
-            setConnectionStatus("Connected to extension");
-            setIsExtensionConnected(true);
-            setError(null);
-            // Trigger confetti animation
-            setShowConfetti(true);
-            setTimeout(() => setShowConfetti(false), 5000);
-          } else {
-            const errorMsg = response
-              ? response.error || "Unknown error"
-              : "No response from extension";
-            setError(`Failed to connect to extension: ${errorMsg}`);
-            setIsExtensionConnected(false);
-          }
-        }
-      );
     }
   };
 
@@ -208,7 +251,7 @@ const WalletConnectInner: React.FC = () => {
   const isOnEthereum = chain?.id === ETHEREUM_CHAIN_ID;
 
   return (
-    <div className="min-h-screen bg-[#1a1b26] text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#1a1b26] via-[#1e1f2a] to-[#1a1b26] text-white overflow-hidden">
       <Head>
         <title>
           Cryptorage - Secure Screenshot Storage | Final Year Project
@@ -223,14 +266,14 @@ const WalletConnectInner: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1 }}
-            className="absolute inset-0 w-full h-full"
+            className="fixed inset-0 w-full h-full z-50 pointer-events-none"
           >
             <Confetti />
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Animated Background */}
+      {/* Enhanced Animated Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="relative w-full h-full">
           {[...Array(5)].map((_, i) => (
@@ -267,263 +310,373 @@ const WalletConnectInner: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        <motion.div className="grid grid-cols-1 lg:grid-cols-5 lg:space-x-72 items-center">
-          {/* Left Section */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-6">
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center"
-              >
+      {/* Main Content Container */}
+      <div className="relative z-10">
+        {/* Header Section */}
+        <header className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center justify-between"
+          >
+            <div className="flex items-center space-x-4">
+              <div className=" p-2 rounded-xl">
                 <Image
                   src={logo}
                   alt="Cryptorage Logo"
-                  width={56}
-                  height={56}
-                  className="w-14 h-14"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10"
                 />
-              </motion.div>
+              </div>
+              <Image
+                src={cryptorageText}
+                alt="Cryptorage"
+                className="h-8 w-auto"
+              />
+            </div>
+            <motion.a
+              href="https://github.com/Rushikeshnimkar/CryptoRage.git"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-[#2a2b36] p-3 rounded-xl border border-[#3a3b46] hover:border-[#00e5ff] transition-all duration-300 group"
+            >
+              <FiGithub className="text-2xl text-[#00e5ff] group-hover:scale-110 transition-transform duration-300" />
+            </motion.a>
+          </motion.div>
+        </header>
+
+        {/* Hero Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+            {/* Left Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-6"
+            >
+              {/* Hero Text */}
+              <div className="space-y-4">
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-3xl lg:text-4xl font-bold leading-tight"
+                >
+                  <span className="bg-gradient-to-r from-[#00e5ff] to-[#00b8cc] bg-clip-text text-transparent">
+                    Secure, Decentralized
+                  </span>
+                  <br />
+                  <span className="text-white">Screenshot Storage</span>
+                </motion.h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                  className="text-lg text-gray-300 leading-relaxed max-w-2xl"
+                >
+                  Capture, encrypt, and store screenshots directly on the
+                  blockchain. Enjoy unparalleled security and accessibility for
+                  your visual data.
+                </motion.p>
+              </div>
+
+              {/* Connection Panel */}
               <motion.div
-                initial={{ opacity: 0, y: -5 }}
+                initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center"
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="bg-gradient-to-br from-[#2a2b36] to-[#1e1f2a] rounded-2xl p-6 border border-[#3a3b46] shadow-2xl backdrop-blur-sm"
               >
-                <Image
-                  src={cryptorageText}
-                  alt="Cryptorage"
-                  className="h-8 w-auto"
-                />
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-2 h-2 bg-[#00e5ff] rounded-full animate-pulse"></div>
+                  <h2 className="text-xl font-bold text-white">
+                    Connect to Cryptorage
+                  </h2>
+                </div>
+
+                {/* RainbowKit Connect Button */}
+                <div className="space-y-3">
+                  <ConnectButton.Custom>
+                    {({
+                      account,
+                      chain,
+                      openAccountModal,
+                      openChainModal,
+                      openConnectModal,
+                      authenticationStatus,
+                      mounted,
+                    }) => {
+                      const ready =
+                        mounted && authenticationStatus !== "loading";
+                      const connected =
+                        ready &&
+                        account &&
+                        chain &&
+                        (!authenticationStatus ||
+                          authenticationStatus === "authenticated");
+
+                      return (
+                        <div
+                          {...(!ready && {
+                            "aria-hidden": true,
+                            style: {
+                              opacity: 0,
+                              pointerEvents: "none",
+                              userSelect: "none",
+                            },
+                          })}
+                        >
+                          {!connected ? (
+                            <button
+                              onClick={openConnectModal}
+                              type="button"
+                              className="w-full bg-gradient-to-r from-[#00e5ff] to-[#00b8cc] hover:from-[#00b8cc] hover:to-[#008fa3] text-[#1a1b26] font-bold py-3 px-5 rounded-xl transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                            >
+                              Connect Wallet
+                            </button>
+                          ) : chain?.id !== ETHEREUM_CHAIN_ID ? (
+                            <button
+                              onClick={openChainModal}
+                              type="button"
+                              className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-5 rounded-xl transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                            >
+                              Switch to Ethereum
+                            </button>
+                          ) : (
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="bg-[#1e1f2a] border-2 border-[#00e5ff] text-[#00e5ff] font-bold py-2.5 px-3 rounded-xl flex items-center justify-center text-sm">
+                                <div className="w-2.5 h-2.5 bg-[#627EEA] rounded-full mr-2"></div>
+                                Ethereum
+                              </div>
+                              <button
+                                onClick={openAccountModal}
+                                type="button"
+                                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-2.5 px-3 rounded-xl transition-all duration-300 flex items-center justify-center transform hover:scale-[1.02] text-sm"
+                              >
+                                <FiCheck className="mr-1.5 w-3.5 h-3.5" />
+                                {account.displayName}
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    }}
+                  </ConnectButton.Custom>
+
+                  {/* Network Warning */}
+                  {isConnected && !isOnEthereum && (
+                    <div className="bg-red-500/10 border-2 border-red-500 text-red-400 font-semibold py-2.5 px-3 rounded-xl text-center backdrop-blur-sm text-sm">
+                      ⚠️ Please switch to Ethereum mainnet to continue
+                    </div>
+                  )}
+
+                  {/* Extension Connection Button */}
+                  {isConnected && isOnEthereum && !isExtensionConnected && (
+                    <button
+                      onClick={handleConnectToExtension}
+                      className="w-full bg-gradient-to-r from-[#00e5ff] to-[#00b8cc] hover:from-[#00b8cc] hover:to-[#008fa3] text-[#1a1b26] font-bold py-3 px-5 rounded-xl transition-all duration-300 text-base shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                    >
+                      Connect to Extension
+                    </button>
+                  )}
+
+                  {/* Connected to Extension */}
+                  {isExtensionConnected && (
+                    <div className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold py-3 px-5 rounded-xl flex items-center justify-center shadow-lg text-base">
+                      <FiCheck className="mr-2 w-4 h-4" />
+                      Connected to Extension
+                    </div>
+                  )}
+                </div>
+
+                {/* Status Information */}
+                <div className="mt-4 space-y-2">
+                  <StatusItem
+                    label="Wallet Status"
+                    value={isConnected ? "Connected" : "Not connected"}
+                    isConnected={isConnected}
+                  />
+                  <StatusItem
+                    label="Account"
+                    value={
+                      address
+                        ? `${address.slice(0, 6)}...${address.slice(-4)}`
+                        : "None"
+                    }
+                    isConnected={!!address}
+                  />
+                  <StatusItem
+                    label="Network"
+                    value={isOnEthereum ? "Ethereum" : chain?.name || "None"}
+                    isConnected={isOnEthereum}
+                  />
+                  <StatusItem
+                    label="Extension Status"
+                    value={connectionStatus}
+                    isConnected={isExtensionConnected}
+                  />
+                </div>
+
+                {/* Disconnect Button */}
+                {isConnected && (
+                  <button
+                    onClick={handleDisconnect}
+                    className="w-full mt-4 bg-red-500/10 border-2 border-red-500 text-red-400 hover:bg-red-500 hover:text-white font-bold py-2.5 px-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] text-sm"
+                  >
+                    Disconnect Wallet
+                  </button>
+                )}
+
+                {/* Error Message */}
+                {error && (
+                  <div className="mt-3 p-3 bg-red-500/10 border border-red-500 text-red-400 rounded-xl backdrop-blur-sm">
+                    <p className="text-sm font-medium">Error: {error}</p>
+                  </div>
+                )}
               </motion.div>
+            </motion.div>
+
+            {/* Right Content - Video */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-[#3a3b46] bg-gradient-to-br from-[#2a2b36] to-[#1e1f2a] float-right">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#00e5ff]/10 to-[#00b8cc]/10 rounded-2xl"></div>
+                <div className="relative z-10 rounded-lg shadow-2xl overflow-hidden aspect-[1000/1500] max-h-[65vh]">
+                  <video
+                    ref={videoRef}
+                    className="relative inset-0 w-full h-[100] object-cover"
+                    loop
+                    muted
+                    playsInline
+                    autoPlay
+                  >
+                    <source
+                      src="https://gateway.pinata.cloud/ipfs/QmPfCXii7NjwzChkLZeD6g4BJkFb2cyF1xAvQrQ8m1ZVS5"
+                      type="video/mp4"
+                    />
+                  </video>
+                  <button className="absolute inset-0 w-full h-full flex items-center justify-center bg-opacity-50 transition-opacity duration-300 opacity-0"></button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-[#00e5ff] to-[#00b8cc] bg-clip-text text-transparent">
+                Key Features
+              </span>
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Discover the powerful capabilities that make Cryptorage the
+              ultimate solution for secure screenshot management
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <FeatureCard
+              icon={FiCamera}
+              title="One-Click Capture"
+              description="Easily capture and store screenshots directly from your browser."
+            />
+            <FeatureCard
+              icon={FiCamera}
+              title="Full-Page Capture"
+              description="Capture entire web pages with a single click, not just what's visible on your screen."
+            />
+            <FeatureCard
+              icon={FiLock}
+              title="End-to-End Encryption"
+              description="Your screenshots are encrypted and stored securely on the blockchain."
+            />
+            <FeatureCard
+              icon={FiCloud}
+              title="Decentralized Storage"
+              description="Access your screenshots from anywhere, anytime, with blockchain reliability."
+            />
+            <FeatureCard
+              icon={FiMessageCircle}
+              title="AI Image Chat"
+              description="Ask questions about your screenshots using Llama 4 AI - get insights, explanations, and analysis instantly."
+            />
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="bg-gradient-to-br from-[#2a2b36] to-[#1e1f2a] rounded-3xl p-12 shadow-2xl border border-[#3a3b46] backdrop-blur-sm"
+          >
+            <div className="text-center mb-12">
+              <h2 className="text-4xl lg:text-5xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-[#00e5ff] to-[#00b8cc] bg-clip-text text-transparent">
+                  How It Works
+                </span>
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Get started with Cryptorage in just a few simple steps
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {[
+                "Install the Cryptorage browser extension.",
+                "Connect your Ethereum wallet.",
+                "Choose between full-page or normal screenshot capture.",
+                "Your screenshots are automatically encrypted and stored on the blockchain.",
+                "Chat with AI about your screenshots or analyze image content using Llama 4.",
+                "Access your screenshots from any device, anytime.",
+              ].map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="flex items-start space-x-4 bg-[#1e1f2a] p-6 rounded-xl border border-[#3a3b46]"
+                >
+                  <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-[#00e5ff] to-[#00b8cc] rounded-full flex items-center justify-center text-[#1a1b26] font-bold text-sm">
+                    {index + 1}
+                  </div>
+                  <p className="text-gray-300 leading-relaxed">{step}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center">
               <motion.a
                 href="https://github.com/Rushikeshnimkar/CryptoRage.git"
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-[#00e5ff] hover:text-[#00b8cc] transition-colors duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="inline-flex items-center bg-gradient-to-r from-[#00e5ff] to-[#00b8cc] hover:from-[#00b8cc] hover:to-[#008fa3] text-[#1a1b26] font-bold py-4 px-8 rounded-xl transition-all duration-300 text-lg shadow-lg hover:shadow-xl"
               >
-                <FiGithub className="text-3xl" />
+                Get Started <FiArrowRight className="ml-2 w-5 h-5" />
               </motion.a>
             </div>
-
-            <motion.p
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-2xl text-[#00e5ff] mb-6 mt-10"
-            >
-              Secure, Decentralized Screenshot Storage
-            </motion.p>
-            <motion.p
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg text-gray-300 mb-8"
-            >
-              Capture, encrypt, and store screenshots directly on the
-              blockchain. Enjoy unparalleled security and accessibility for your
-              visual data.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="bg-[#2a2b36] rounded-lg p-6 mb-8"
-            >
-              <h2 className="text-2xl font-bold mb-4">Connect to Cryptorage</h2>
-
-              {/* RainbowKit Connect Button */}
-              <div className="mb-4">
-                <ConnectButton.Custom>
-                  {({
-                    account,
-                    chain,
-                    openAccountModal,
-                    openChainModal,
-                    openConnectModal,
-                    authenticationStatus,
-                    mounted,
-                  }) => {
-                    const ready = mounted && authenticationStatus !== "loading";
-                    const connected =
-                      ready &&
-                      account &&
-                      chain &&
-                      (!authenticationStatus ||
-                        authenticationStatus === "authenticated");
-
-                    return (
-                      <div
-                        {...(!ready && {
-                          "aria-hidden": true,
-                          style: {
-                            opacity: 0,
-                            pointerEvents: "none",
-                            userSelect: "none",
-                          },
-                        })}
-                      >
-                        {!connected ? (
-                          <button
-                            onClick={openConnectModal}
-                            type="button"
-                            className="w-full bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg"
-                          >
-                            Connect Wallet
-                          </button>
-                        ) : chain?.id !== ETHEREUM_CHAIN_ID ? (
-                          <button
-                            onClick={openChainModal}
-                            type="button"
-                            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg"
-                          >
-                            Switch to Ethereum
-                          </button>
-                        ) : (
-                          <div className="flex gap-2">
-                            <div className="flex-1 bg-[#2a2b36] border border-[#00e5ff] text-[#00e5ff] font-bold py-2 px-3 rounded-lg flex items-center justify-center">
-                              <div
-                                style={{
-                                  background: "#627EEA",
-                                  width: 12,
-                                  height: 12,
-                                  borderRadius: 999,
-                                  overflow: "hidden",
-                                  marginRight: 8,
-                                  display: "inline-block",
-                                }}
-                              >
-                                <div
-                                  style={{
-                                    width: 12,
-                                    height: 12,
-                                    background: "#627EEA",
-                                  }}
-                                />
-                              </div>
-                              Ethereum
-                            </div>
-
-                            <button
-                              onClick={openAccountModal}
-                              type="button"
-                              className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded-lg transition duration-300 flex items-center justify-center"
-                            >
-                              <FiCheck className="mr-2" />
-                              {account.displayName}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }}
-                </ConnectButton.Custom>
-              </div>
-
-              {/* Network Warning */}
-              {isConnected && !isOnEthereum && (
-                <div className="w-full bg-red-600/20 border border-red-600 text-red-400 font-bold py-3 px-4 rounded-lg mb-4 text-center">
-                  ⚠️ Please switch to Ethereum mainnet to continue
-                </div>
-              )}
-
-              {/* Extension Connection Button */}
-              {isConnected && isOnEthereum && !isExtensionConnected && (
-                <button
-                  onClick={handleConnectToExtension}
-                  className="w-full bg-[#00e5ff] hover:bg-[#00b8cc] text-[#1a1b26] font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg mb-4"
-                >
-                  Connect to Extension
-                </button>
-              )}
-
-              {/* Connected to Extension */}
-              {isExtensionConnected && (
-                <div className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 text-lg shadow-lg flex items-center justify-center mb-4">
-                  <FiCheck className="mr-2" /> Connected to Extension
-                </div>
-              )}
-
-              {/* Status Information */}
-              <div className="mt-4 text-sm space-y-2">
-                <StatusItem
-                  label="Wallet status"
-                  value={isConnected ? "Connected" : "Not connected"}
-                  isConnected={isConnected}
-                />
-                <StatusItem
-                  label="Account"
-                  value={
-                    address
-                      ? `${address.slice(0, 6)}...${address.slice(-4)}`
-                      : "None"
-                  }
-                  isConnected={!!address}
-                />
-                <StatusItem
-                  label="Network"
-                  value={isOnEthereum ? "Ethereum" : chain?.name || "None"}
-                  isConnected={isOnEthereum}
-                />
-                <StatusItem
-                  label="Extension status"
-                  value={connectionStatus}
-                  isConnected={isExtensionConnected}
-                />
-              </div>
-
-              {/* Disconnect Button */}
-              {isConnected && (
-                <button
-                  onClick={handleDisconnect}
-                  className="w-full mt-4 bg-red-600/20 border border-red-600 text-red-400 hover:bg-red-600 hover:text-white font-bold py-2 px-4 rounded-lg transition duration-300"
-                >
-                  Disconnect Wallet
-                </button>
-              )}
-
-              {/* Error Message */}
-              {error && (
-                <p className="text-red-500 mt-4 text-center bg-red-500/10 p-2 rounded-lg">
-                  Error: {error}
-                </p>
-              )}
-            </motion.div>
-          </div>
-
-          {/* Right Section: Video Preview */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="relative w-full max-w-md mx-auto lg:max-w-full lg:col-span-3"
-          >
-            <div className="absolute inset-0 rounded-lg filter blur-3xl"></div>
-            <div className="relative z-10 rounded-lg shadow-2xl overflow-hidden aspect-[1000/1500] max-h-[80vh]">
-              <video
-                ref={videoRef}
-                className="relative inset-0 w-full h-full object-cover"
-                loop
-                muted
-                playsInline
-                autoPlay
-              >
-                <source
-                  src="https://gateway.pinata.cloud/ipfs/QmPfCXii7NjwzChkLZeD6g4BJkFb2cyF1xAvQrQ8m1ZVS5"
-                  type="video/mp4"
-                />
-                <track kind="captions" label="English" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
           </motion.div>
-        </motion.div>
+        </section>
       </div>
     </div>
   );
