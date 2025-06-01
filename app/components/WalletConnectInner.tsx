@@ -277,7 +277,7 @@ const WalletConnectInner: React.FC = () => {
           {[...Array(5)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute inset-0 grid grid-cols-5 gap-4 opacity-20"
+              className="absolute inset-0 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 opacity-20"
               initial={{ rotate: 0, scale: 1 }}
               animate={{
                 rotate: [0, 360],
@@ -541,15 +541,11 @@ const WalletConnectInner: React.FC = () => {
             </motion.div>
 
             {/* Right Content - Video */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative"
-            >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-[#3a3b46] bg-gradient-to-br from-[#2a2b36] to-[#1e1f2a] float-right">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#00e5ff]/10 to-[#00b8cc]/10 rounded-2xl"></div>
-                <div className="relative z-10 rounded-lg shadow-2xl overflow-hidden aspect-[1000/1500] max-h-[65vh]">
+
+            <div className="flex justify-end w-full">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <div className="absolute inset-0 rounded-2xl"></div>
+                <div className="relative z-10 rounded-lg shadow-2xl overflow-hidden aspect-[1000/1500] max-h-[80vh]">
                   <video
                     ref={videoRef}
                     className="relative inset-0 w-full h-[100] object-cover"
@@ -562,11 +558,12 @@ const WalletConnectInner: React.FC = () => {
                       src="https://gateway.pinata.cloud/ipfs/QmPfCXii7NjwzChkLZeD6g4BJkFb2cyF1xAvQrQ8m1ZVS5"
                       type="video/mp4"
                     />
+                    Your browser does not support the video tag.
                   </video>
                   <button className="absolute inset-0 w-full h-full flex items-center justify-center bg-opacity-50 transition-opacity duration-300 opacity-0"></button>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </section>
 
