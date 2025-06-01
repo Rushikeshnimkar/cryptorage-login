@@ -542,28 +542,31 @@ const WalletConnectInner: React.FC = () => {
 
             {/* Right Content - Video */}
 
-            <div className="flex justify-end w-full">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <div className="absolute inset-0 rounded-2xl"></div>
-                <div className="relative z-10 rounded-lg shadow-2xl overflow-hidden aspect-[1000/1500] max-h-[80vh]">
-                  <video
-                    ref={videoRef}
-                    className="relative inset-0 w-full h-[100] object-cover"
-                    loop
-                    muted
-                    playsInline
-                    autoPlay
-                  >
-                    <source
-                      src="https://gateway.pinata.cloud/ipfs/QmPfCXii7NjwzChkLZeD6g4BJkFb2cyF1xAvQrQ8m1ZVS5"
-                      type="video/mp4"
-                    />
-                    Your browser does not support the video tag.
-                  </video>
-                  <button className="absolute inset-0 w-full h-full flex items-center justify-center bg-opacity-50 transition-opacity duration-300 opacity-0"></button>
-                </div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative"
+            >
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-[#3a3b46] bg-gradient-to-br from-[#2a2b36] to-[#1e1f2a]">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#00e5ff]/10 to-[#00b8cc]/10 rounded-2xl"></div>
+                <video
+                  ref={videoRef}
+                  className="relative w-full h-auto max-h-[70vh] object-cover rounded-2xl"
+                  loop
+                  muted
+                  playsInline
+                  autoPlay
+                >
+                  <source
+                    src="https://gateway.pinata.cloud/ipfs/QmPfCXii7NjwzChkLZeD6g4BJkFb2cyF1xAvQrQ8m1ZVS5"
+                    type="video/mp4"
+                  />
+                  <track kind="captions" label="English" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
-            </div>
+            </motion.div>
           </div>
         </section>
 
