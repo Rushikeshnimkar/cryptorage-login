@@ -559,7 +559,7 @@ const WalletConnectInner: React.FC = () => {
                   autoPlay
                 >
                   <source
-                    src="https://gateway.pinata.cloud/ipfs/QmPfCXii7NjwzChkLZeD6g4BJkFb2cyF1xAvQrQ8m1ZVS5"
+                    src="https://gateway.pinata.cloud/ipfs/bafybeiasx3njuxhhsdepqiu5435ckwafuirg6xja7snqqlcoqb4i2fjcuu"
                     type="video/mp4"
                   />
                   <track kind="captions" label="English" />
