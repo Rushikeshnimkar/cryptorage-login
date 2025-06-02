@@ -548,7 +548,7 @@ const WalletConnectInner: React.FC = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="relative"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl ">
+              <div className="relative rounded-2xl overflow-hidden  ">
                 <div className="absolute inset-0  rounded-2xl"></div>
                 <video
                   ref={videoRef}
