@@ -559,8 +559,8 @@ const WalletConnectInner: React.FC = () => {
                   autoPlay
                 >
                   <source
-                    src="https://gateway.pinata.cloud/ipfs/bafybeiasx3njuxhhsdepqiu5435ckwafuirg6xja7snqqlcoqb4i2fjcuu"
-                    type="video/mp4"
+                    src="https://gateway.pinata.cloud/ipfs/bafybeid5soxfx7qdsg5y3o6geryvau6agxqxwzuegkrpimeblacgauc2su"
+                    type="video/webm"
                   />
                   <track kind="captions" label="English" />
                   Your browser does not support the video tag.
